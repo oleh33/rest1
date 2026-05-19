@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Kryivka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sb-ornament">✦</div>
+    <div class="sb-name">Kryivka</div>
+  </div>
+
+  <!-- Поточний офіціант -->
+  <div class="sidebar-waiter">
+    <div class="sw-avatar">{{ waiter.name[0] }}</div>
+    <div class="sw-info">
+      <div class="sw-name">{{ waiter.name }}</div>
+      <div class="sw-level">{{ '⭐ Senior' if waiter.level == 'senior' else 'Junior' }}</div>
+    </div>
+  </div>
+
+  <ul class="nav-list">
+    <li><button class="nav-btn active" data-tab="halls">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Зали та столики
+    </button></li>
+    <li><button class="nav-btn" data-tab="queue">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.2" fill="currentColor"/><circle cx="3" cy="12" r="1.2" fill="currentColor"/><circle cx="3" cy="18" r="1.2" fill="currentColor"/></svg>
+      Черга клієнтів
+    </button></li>
+    <li><button class="nav-btn" data-tab="orders">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>
+      Мої замовлення
+    </button></li>
+    <li><button class="nav-btn" data-tab="receipts">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Чеки
+    </button></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="doLogout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Вийти
+    </button>
+  </div>
+</nav>
+
+<!-- ══ MAIN ═════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ══ ЗАЛИ / СТОЛИКИ ══════════════════════════════════════ -->
+  <div id="page-halls" class="page active">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Зали та столики</h1>
+        <p class="page-sub">Натисніть на столик щоб переглянути або створити замовлення</p>
+      </div>
+      <button class="btn btn-primary" onclick="openBookingModal()">+ Нове бронювання</button>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item free">Вільний</span>
+      <span class="legend-item reserved">Заброньований</span>
+      <span class="legend-item occupied">Зайнятий</span>
+    </div>
+
+    <div id="halls-wrap"></div>
+  </div>
+
+  <!-- ══ ЧЕРГА ════════════════════════════════════════════════ -->
+  <div id="page-queue" class="page">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Черга клієнтів</h1>
+        <p class="page-sub">Оберіть клієнта зі списку і призначте йому столик</p>
+      </div>
+      <button class="btn btn-primary" onclick="openAddClientModal()">+ Додати клієнта</button>
+    </div>
+    <div id="queue-list"></div>
+  </div>
+
+  <!-- ══ МОЇ ЗАМОВЛЕННЯ ═══════════════════════════════════════ -->
+  <div id="page-orders" class="page">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Мої замовлення</h1>
+        <p class="page-sub">Всі активні замовлення ваших столиків</p>
+      </div>
+    </div>
+    <div id="orders-list"></div>
+  </div>
+
+  <!-- ══ ЧЕКИ ════════════════════════════════════════════════ -->
+  <div id="page-receipts" class="page">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Чеки</h1>
+        <p class="page-sub">Перегляд і друк чеків для ваших столиків</p>
+      </div>
+    </div>
+    <div id="receipts-wrap"></div>
+  </div>
+
+</main>
+
+<!-- ══ МОДАЛЬНЕ: ДЕТАЛІ СТОЛИКА ════════════════════════════ -->
+<div class="modal-backdrop" id="modal-table" onclick="closeModal('modal-table')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('modal-table')">✕</button>
+    <div id="modal-table-content"></div>
+  </div>
+</div>
+
+<!-- ══ МОДАЛЬНЕ: НОВЕ БРОНЮВАННЯ ═══════════════════════════ -->
+<div class="modal-backdrop" id="modal-booking" onclick="closeModal('modal-booking')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('modal-booking')">✕</button>
+    <div class="modal-title">Нове бронювання</div>
+    <div class="form-group">
+      <label>Ім'я клієнта</label>
+      <input id="bk-client" type="text" placeholder="Іван Петренко"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Столик</label>
+        <select id="bk-table">
+          {% for hall in halls %}
+          <optgroup label="{{ hall.name }}">
+            {% for t in hall.tables %}
+            <option value="{{ t.table_id }}">Столик #{{ t.table_id }} ({{ t.seats }} місць)</option>
+            {% endfor %}
+          </optgroup>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="max-width:110px">
+        <label>Гостей</label>
+        <input id="bk-guests" type="number" value="2" min="1" max="20"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Примітка</label>
+      <input id="bk-note" type="text" placeholder="День народження, алергія…"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitBooking()">Забронювати</button>
+  </div>
+</div>
+
+<!-- ══ МОДАЛЬНЕ: ДОДАТИ КЛІЄНТА ════════════════════════════ -->
+<div class="modal-backdrop" id="modal-addclient" onclick="closeModal('modal-addclient')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('modal-addclient')">✕</button>
+    <div class="modal-title">Додати клієнта до черги</div>
+    <div class="form-group">
+      <label>Ім'я клієнта</label>
+      <input id="ac-name" type="text" placeholder="Іван Петренко"/>
+    </div>
+    <div class="form-group">
+      <label>Тип клієнта</label>
+      <select id="ac-type">
+        <option value="REGULAR">Звичайний</option>
+        <option value="LOYAL">Постійний (знижка 10%)</option>
+        <option value="VIP">VIP (знижка 15%)</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitAddClient()">Додати до черги</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Меню (прихований список для замовлень) -->
+<div id="menu-data" style="display:none">
+  {% for item in menu %}
+  <span data-id="{{ item.item_id }}" data-name="{{ item.name }}" data-price="{{ item.price }}" data-cat="{{ item.category }}"></span>
+  {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Kryivka — Вхід</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1208;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Фоновий узор */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(180,120,40,.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(120,80,20,.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .login-wrap {
+    width: 100%;
+    max-width: 460px;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-block {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .brand-ornament {
+    font-size: 32px;
+    color: #c9921a;
+    display: block;
+    margin-bottom: 10px;
+    letter-spacing: 8px;
+  }
+  .brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    color: #f0d898;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .brand-title em {
+    font-style: italic;
+    color: #c9921a;
+  }
+  .brand-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7a6845;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(201,146,26,.2);
+    border-radius: 16px;
+    padding: 36px 32px;
+    backdrop-filter: blur(12px);
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #f0d898;
+    margin-bottom: 6px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: #7a6845;
+    margin-bottom: 28px;
+  }
+
+  .waiters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .waiter-btn {
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(201,146,26,.25);
+    border-radius: 12px;
+    padding: 16px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+    color: #e8d8b0;
+    font-family: 'Inter', sans-serif;
+  }
+  .waiter-btn:hover {
+    background: rgba(201,146,26,.12);
+    border-color: #c9921a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,146,26,.15);
+  }
+  .waiter-btn.selected {
+    background: rgba(201,146,26,.18);
+    border-color: #c9921a;
+    box-shadow: 0 0 0 3px rgba(201,146,26,.2);
+  }
+  .wb-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c9921a, #8b5e0a);
+    color: #1a1208;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+    font-family: 'Playfair Display', serif;
+  }
+  .wb-name { font-size: 13.5px; font-weight: 500; line-height: 1.3; }
+  .wb-level {
+    font-size: 10.5px;
+    color: #7a6845;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .wb-level.senior { color: #c9921a; }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #c9921a, #a87010);
+    border: none;
+    border-radius: 10px;
+    color: #1a1208;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .btn-login:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,146,26,.3); }
+  .btn-login:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  .error-msg {
+    color: #e05555;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    min-height: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="brand-block">
+    <span class="brand-ornament">✦ ✦ ✦</span>
+    <div class="brand-title">Kryivka</div>
+    <div class="brand-sub">Система управління залом</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Оберіть своє ім'я</div>
+    <div class="card-sub">Натисніть на своє ім'я щоб увійти в систему</div>
+
+    <div class="waiters-grid">
+      {% for w in waiters %}
+      <button class="waiter-btn" data-id="{{ w.waiter_id }}" onclick="selectWaiter(this, {{ w.waiter_id }})">
+        <div class="wb-avatar">{{ w.name[0] }}</div>
+        <div class="wb-name">{{ w.name }}</div>
+        <div class="wb-level {{ w.level }}">{{ '⭐ Senior' if w.level == 'senior' else 'Junior' }}</div>
+      </button>
+      {% endfor %}
+    </div>
+
+    <button class="btn-login" id="btn-login" disabled onclick="doLogin()">Увійти</button>
+    <div class="error-msg" id="err"></div>
+  </div>
+</div>
+
+<script>
+let selectedId = null;
+
+function selectWaiter(el, id) {
+  document.querySelectorAll('.waiter-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedId = id;
+  document.getElementById('btn-login').disabled = false;
+}
+
+async function doLogin() {
+  if (!selectedId) return;
+  const res  = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ waiter_id: selectedId })
+  });
+  const data = await res.json();
+  if (data.error) { document.getElementById('err').textContent = data.error; return; }
+  window.location.href = '/';
+}
+</script>
+</body>
+</html>
